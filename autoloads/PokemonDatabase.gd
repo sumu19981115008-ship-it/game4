@@ -28,6 +28,23 @@ func get_species(species_id: int) -> PokemonSpeciesData:
 func get_total_species_count() -> int:
 	return _species_cache.size()
 
+func get_anim_frames_path(pokemon_id: int, back: bool = false, shiny: bool = false) -> String:
+	if shiny:
+		return "res://assets/sprites/animated/shiny/%d_frames.tres" % pokemon_id
+	if back:
+		return "res://assets/sprites/animated/back/%d_frames.tres" % pokemon_id
+	return "res://assets/sprites/animated/front/%d_frames.tres" % pokemon_id
+
+func get_anim_frames(pokemon_id: int, back: bool = false, shiny: bool = false) -> SpriteFrames:
+	var path := get_anim_frames_path(pokemon_id, back, shiny)
+	if ResourceLoader.exists(path):
+		return load(path)
+	# 回退到正面普通动画
+	var fallback := "res://assets/sprites/animated/front/%d_frames.tres" % pokemon_id
+	if ResourceLoader.exists(fallback):
+		return load(fallback)
+	return null
+
 func get_sprite_path(pokemon_id: int, back: bool = false, shiny: bool = false) -> String:
 	if back:
 		# 背面无闪光单独目录，闪光背面放 shiny_back
