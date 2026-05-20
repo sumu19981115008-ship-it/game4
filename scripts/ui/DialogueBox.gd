@@ -13,7 +13,7 @@ var _typing_timer: float = 0.0
 var _char_index: int = 0
 
 func _ready() -> void:
-	hide()
+	visible = false
 	DialogueManager.line_displayed.connect(_on_line_displayed)
 	DialogueManager.choices_presented.connect(_on_choices_presented)
 	EventBus.dialogue_started.connect(_on_dialogue_started)
@@ -29,7 +29,7 @@ func _process(delta: float) -> void:
 		_text_label.visible_characters = _char_index
 		if _char_index >= _full_text.length():
 			_is_typing = false
-			_continue_indicator.show()
+			_continue_indicator.visible = true
 
 func _input(event: InputEvent) -> void:
 	if not visible:
@@ -39,20 +39,20 @@ func _input(event: InputEvent) -> void:
 			# 跳字：立即显示全部文字
 			_is_typing = false
 			_text_label.visible_characters = -1
-			_continue_indicator.show()
+			_continue_indicator.visible = true
 		elif _choices_container.get_child_count() == 0:
 			DialogueManager.advance()
 
 func _on_dialogue_started(_id: String) -> void:
 	_choices_container.visible = false
-	show()
+	visible = true
 
 func _on_dialogue_ended(_id: String) -> void:
-	hide()
+	visible = false
 
 func _on_line_displayed(line: Dictionary) -> void:
 	_choices_container.visible = false
-	_continue_indicator.hide()
+	_continue_indicator.visible = false
 	var speaker: String = line.get("speaker", "")
 	_speaker_label.text = speaker
 	_speaker_label.visible = not speaker.is_empty()
@@ -64,7 +64,7 @@ func _on_line_displayed(line: Dictionary) -> void:
 	_is_typing = true
 
 func _on_choices_presented(choices: Array) -> void:
-	_continue_indicator.hide()
+	_continue_indicator.visible = false
 	for child in _choices_container.get_children():
 		child.queue_free()
 	for i in choices.size():

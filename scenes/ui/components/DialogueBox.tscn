@@ -4,6 +4,7 @@
 
 [node name="DialogueBox" type="CanvasLayer"]
 layer = 5
+visible = false
 script = ExtResource("1_dlgbox")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]

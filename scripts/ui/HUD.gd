@@ -24,7 +24,7 @@ func _on_party_updated() -> void:
 	pass
 
 func _on_dialogue_started(_id: String) -> void:
-	hide()
+	visible = false
 
 func _on_dialogue_ended(_id: String) -> void:
-	show()
+	visible = true
