@@ -19,7 +19,7 @@ shape = SubResource("1_capsule")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
-position = Vector2(0, -4)
+position = Vector2(0, -8)
 sprite_frames = ExtResource("3_frames")
 animation = "idle_down"
 autoplay = "idle_down"
