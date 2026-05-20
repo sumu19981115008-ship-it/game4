@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://testzone_scene"]
+[gd_scene load_steps=6 format=3 uid="uid://testzone_scene"]
 
 [ext_resource type="Script" path="res://scripts/world/zones/TestZone.gd" id="1_zone"]
 [ext_resource type="Script" path="res://scripts/world/ProceduralMap.gd" id="2_map"]
 [ext_resource type="PackedScene" path="res://scenes/entities/player/Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/DialogueBox.tscn" id="4_dialogue"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud/HUD.tscn" id="5_hud"]
 
 [node name="TestZone" type="Node2D"]
 y_sort_enabled = true
@@ -12,6 +14,10 @@ script = ExtResource("1_zone")
 script = ExtResource("2_map")
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
+
+[node name="DialogueBox" parent="." instance=ExtResource("4_dialogue")]
+
+[node name="HUD" parent="." instance=ExtResource("5_hud")]
 
 [node name="DebugCanvas" type="CanvasLayer" parent="."]
 layer = 30
