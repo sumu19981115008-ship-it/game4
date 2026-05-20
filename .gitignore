@@ -1,0 +1,15 @@
+# Godot编辑器缓存（不需要提交）
+.godot/
+
+# 导入缓存
+*.import
+
+# 导出文件
+export/
+*.pck
+*.apk
+*.ipa
+
+# 系统文件
+.DS_Store
+Thumbs.db

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>像素皮卡丘预览 - 动态版</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Courier New', monospace;
+    color: #fff;
+    gap: 40px;
+    padding: 40px;
+  }
+  h2 { color: #F8D030; letter-spacing: 6px; font-size: 22px; }
+  .subtitle { color: #aaa; font-size: 12px; margin-top: -30px; }
+
+  /* 展示区 */
+  .section-title {
+    color: #F8D030;
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .row {
+    display: flex;
+    gap: 40px;
+    align-items: flex-end;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .sprite-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .sprite-card img {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: #16213e;
+    border: 2px solid #F8D030;
+    border-radius: 8px;
+    padding: 8px;
+  }
+  .sprite-card .label {
+    color: #aaa;
+    font-size: 11px;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #F8D030;
+    color: #1a1a2e;
+    font-weight: bold;
+  }
+
+  /* 动态 GIF 区 */
+  .animated-card img {
+    border-color: #E03030;
+  }
+
+  /* 游戏内模拟 */
+  .game-mock {
+    background: #16213e;
+    border: 3px solid #F8D030;
+    border-radius: 12px;
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .hp-bar-wrap {
+    width: 180px;
+  }
+  .hp-label { font-size: 11px; color: #aaa; display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .hp-bar { height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
+  .hp-fill { height: 100%; width: 72%; background: linear-gradient(90deg, #4caf50, #8bc34a); border-radius: 4px; }
+  .poke-name { color: #F8D030; font-size: 16px; letter-spacing: 2px; }
+  .poke-level { color: #aaa; font-size: 11px; }
+
+  /* 动画效果 */
+  @keyframes float {
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-8px); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%     { transform: translateX(-4px) rotate(-3deg); }
+    40%     { transform: translateX(4px) rotate(3deg); }
+    60%     { transform: translateX(-3px) rotate(-2deg); }
+    80%     { transform: translateX(3px) rotate(2deg); }
+  }
+  @keyframes thunder {
+    0%,90%,100% { filter: brightness(1) drop-shadow(0 0 0px #F8D030); }
+    92%         { filter: brightness(2.5) drop-shadow(0 0 12px #F8D030); }
+    95%         { filter: brightness(1); }
+    97%         { filter: brightness(2) drop-shadow(0 0 8px #fff); }
+  }
+  @keyframes hpDrain {
+    from { width: 72%; }
+    to   { width: 12%; background: linear-gradient(90deg,#f44336,#ff0000); }
+  }
+  .anim-float  { animation: float 2s ease-in-out infinite; }
+  .anim-thunder { animation: thunder 3s ease-in-out infinite; }
+  .btn {
+    background: #F8D030; color: #1a1a2e; border: none;
+    padding: 8px 20px; border-radius: 20px; cursor: pointer;
+    font-family: 'Courier New', monospace; font-weight: bold;
+    font-size: 12px; letter-spacing: 1px;
+    transition: transform 0.1s;
+  }
+  .btn:hover { transform: scale(1.05); }
+  .battle-scene {
+    background: #0d1b2a;
+    border: 3px solid #F8D030;
+    border-radius: 16px;
+    padding: 24px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 480px;
+  }
+  .battle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+  }
+  .battle-info { display: flex; flex-direction: column; gap: 6px; }
+  .battle-log {
+    width: 100%;
+    background: #16213e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #ddd;
+    min-height: 48px;
+    line-height: 1.8;
+  }
+  .battle-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+</style>
+</head>
+<body>
+
+<h2>⚡ PIKACHU ⚡</h2>
+<p class="subtitle">来源：PokeAPI 开源精灵图库 + CSS/JS 动画</p>
+
+<!-- 第一排：待机动画 + 闪电特效 -->
+<div>
+  <div class="section-title">▶ 待机动画效果</div>
+  <div class="row">
+    <div class="sprite-card">
+      <img src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/25.png"
+           width="160" height="160" alt="皮卡丘漂浮" class="anim-float">
+      <div class="label">漂浮待机</div>
+    </div>
+    <div class="sprite-card">
+      <img src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/25.png"
+           width="160" height="160" alt="皮卡丘闪电" class="anim-thunder">
+      <div class="label">⚡ 蓄力特效</div>
+    </div>
+    <div class="sprite-card">
+      <img id="shakeSprite"
+           src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/25.png"
+           width="160" height="160" alt="皮卡丘受击">
+      <div class="label">受击抖动</div>
+      <button class="btn" onclick="triggerShake()">点击触发</button>
+    </div>
+  </div>
+</div>
+
+<!-- 第二排：动态 GIF（来自 PokeAPI showdown 动画） -->
+<div>
+  <div class="section-title">▶ 官方战斗动画精灵（Showdown GIF）</div>
+  <div class="row">
+    <div class="sprite-card">
+      <img src="https://play.pokemonshowdown.com/sprites/ani/pikachu.gif"
+           width="160" height="160" alt="皮卡丘动画正面"
+           style="background:#16213e;border:2px solid #F8D030;border-radius:8px;padding:8px;">
+      <div class="label">正面战斗动画</div>
+      <span class="tag">原生 GIF 动画</span>
+    </div>
+    <div class="sprite-card">
+      <img src="https://play.pokemonshowdown.com/sprites/ani-back/pikachu.gif"
+           width="160" height="160" alt="皮卡丘动画背面"
+           style="background:#16213e;border:2px solid #F8D030;border-radius:8px;padding:8px;">
+      <div class="label">背面战斗动画</div>
+    </div>
+    <div class="sprite-card">
+      <img src="https://play.pokemonshowdown.com/sprites/ani-shiny/pikachu.gif"
+           width="160" height="160" alt="闪光皮卡丘动画"
+           style="background:#16213e;border:2px solid #E8C030;border-radius:8px;padding:8px;">
+      <div class="label">色违动画</div>
+    </div>
+  </div>
+</div>
+
+<!-- 第三排：互动战斗场景模拟 -->
+<div>
+  <div class="section-title">▶ 互动战斗场景模拟</div>
+  <div class="battle-scene">
+    <!-- 敌方 -->
+    <div class="battle-row">
+      <div class="battle-info">
+        <div class="poke-name" style="font-size:13px;">野生 PIKACHU</div>
+        <div class="poke-level">Lv.30</div>
+        <div class="hp-bar-wrap">
+          <div class="hp-label"><span>HP</span></div>
+          <div class="hp-bar">
+            <div class="hp-fill" id="enemyHp" style="width:80%;background:linear-gradient(90deg,#4caf50,#8bc34a);transition:width 0.8s ease;"></div>
+          </div>
+        </div>
+      </div>
+      <img id="enemySprite"
+           src="https://play.pokemonshowdown.com/sprites/ani/pikachu.gif"
+           width="120" height="120" alt="敌方">
+    </div>
+
+    <!-- 己方 -->
+    <div class="battle-row" style="margin-top:8px;">
+      <img id="playerSprite"
+           src="https://play.pokemonshowdown.com/sprites/ani-back/pikachu.gif"
+           width="120" height="120" alt="己方">
+      <div class="battle-info" style="align-items:flex-end;">
+        <div class="poke-name" style="font-size:13px;">PIKACHU</div>
+        <div class="poke-level">Lv.35</div>
+        <div class="hp-bar-wrap">
+          <div class="hp-label"><span>HP</span><span id="hpText">54/75</span></div>
+          <div class="hp-bar">
+            <div class="hp-fill" id="playerHp" style="width:72%;transition:width 0.8s ease;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 战斗日志 -->
+    <div class="battle-log" id="battleLog">选择一个技能开始战斗...</div>
+
+    <!-- 技能按钮 -->
+    <div class="battle-btns">
+      <button class="btn" onclick="useMove('十万伏特','electric',35)">⚡ 十万伏特</button>
+      <button class="btn" onclick="useMove('铁尾','steel',25)">🌟 铁尾</button>
+      <button class="btn" onclick="useMove('冲浪','water',20)" style="background:#60a0f0;">🌊 冲浪</button>
+      <button class="btn" onclick="useMove('电光一闪','electric',15)" style="background:#ffe566;">💨 电光一闪</button>
+    </div>
+  </div>
+</div>
+
+<p style="color:#555;font-size:11px;margin-top:10px;">
+  动画素材：Pokémon Showdown（开源） · 静态素材：PokeAPI/sprites (MIT)
+</p>
+
+<script>
+  let enemyHpPct = 80;
+  let playerHpPct = 72;
+  let playerHpVal = 54;
+  let busy = false;
+
+  function triggerShake() {
+    const el = document.getElementById('shakeSprite');
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = 'shake 0.5s ease';
+  }
+
+  function log(msg) {
+    document.getElementById('battleLog').innerHTML = msg;
+  }
+
+  function updateBars() {
+    const eBar = document.getElementById('enemyHp');
+    const pBar = document.getElementById('playerHp');
+    const pText = document.getElementById('hpText');
+
+    eBar.style.width = Math.max(0, enemyHpPct) + '%';
+    eBar.style.background = enemyHpPct > 50
+      ? 'linear-gradient(90deg,#4caf50,#8bc34a)'
+      : enemyHpPct > 20
+        ? 'linear-gradient(90deg,#ff9800,#ffc107)'
+        : 'linear-gradient(90deg,#f44336,#ff5722)';
+
+    pBar.style.width = Math.max(0, playerHpPct) + '%';
+    playerHpVal = Math.max(0, Math.round(playerHpPct * 75 / 100));
+    pText.textContent = playerHpVal + '/75';
+  }
+
+  function useMove(name, type, power) {
+    if (busy) return;
+    busy = true;
+
+    const player = document.getElementById('playerSprite');
+    const enemy  = document.getElementById('enemySprite');
+
+    // 己方攻击动画
+    player.style.animation = 'none';
+    void player.offsetWidth;
+    player.style.filter = 'brightness(2) drop-shadow(0 0 10px #F8D030)';
+    log(`PIKACHU 使用了 ${name}！`);
+
+    setTimeout(() => {
+      player.style.filter = '';
+      // 敌方受击
+      enemy.style.filter = 'brightness(3) invert(0.3)';
+      const dmg = Math.floor(Math.random() * 10 + power);
+      enemyHpPct = Math.max(0, enemyHpPct - dmg);
+      updateBars();
+
+      setTimeout(() => {
+        enemy.style.filter = '';
+        if (enemyHpPct <= 0) {
+          log(`野生 PIKACHU 倒下了！🎉`);
+          enemy.style.opacity = '0.2';
+          busy = false;
+          return;
+        }
+        // 敌方反击
+        log(`野生 PIKACHU 使用了 电磁炮！`);
+        enemy.style.filter = 'brightness(2.5) drop-shadow(0 0 8px #fff)';
+        setTimeout(() => {
+          enemy.style.filter = '';
+          player.style.filter = 'brightness(3) invert(0.2)';
+          const eDmg = Math.floor(Math.random() * 12 + 8);
+          playerHpPct = Math.max(0, playerHpPct - eDmg);
+          updateBars();
+          setTimeout(() => {
+            player.style.filter = '';
+            if (playerHpPct <= 0) {
+              log(`PIKACHU 倒下了...💔`);
+              player.style.opacity = '0.2';
+            } else {
+              log(`对战进行中... 剩余 HP: 己方 ${playerHpVal}/75`);
+            }
+            busy = false;
+          }, 300);
+        }, 600);
+      }, 500);
+    }, 600);
+  }
+</script>
+
+</body>
+</html>

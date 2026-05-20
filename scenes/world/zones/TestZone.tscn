@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://testzone_scene"]
+
+[ext_resource type="Script" path="res://scripts/world/zones/TestZone.gd" id="1_zone"]
+[ext_resource type="Script" path="res://scripts/world/ProceduralMap.gd" id="2_map"]
+[ext_resource type="PackedScene" path="res://scenes/entities/player/Player.tscn" id="3_player"]
+
+[node name="TestZone" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_zone")
+
+[node name="ProceduralMap" type="Node2D" parent="."]
+script = ExtResource("2_map")
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+
+[node name="DebugCanvas" type="CanvasLayer" parent="."]
+layer = 30
+
+[node name="DebugLabel" type="Label" parent="DebugCanvas"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 600.0
+offset_bottom = 32.0
+text = "加载中..."
