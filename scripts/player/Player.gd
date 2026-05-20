@@ -51,11 +51,11 @@ func _update_direction(input_dir: Vector2) -> void:
 		direction_changed.emit(current_direction)
 
 func _play_walk_anim() -> void:
-	var anim := "walk_" + DIR_NAMES[current_direction]
+	var anim: String = "walk_" + DIR_NAMES[current_direction]
 	if animated_sprite.animation != anim:
 		animated_sprite.play(anim)
 
 func _play_idle_anim() -> void:
-	var anim := "idle_" + DIR_NAMES[current_direction]
+	var anim: String = "idle_" + DIR_NAMES[current_direction]
 	if animated_sprite.animation != anim:
 		animated_sprite.play(anim)
