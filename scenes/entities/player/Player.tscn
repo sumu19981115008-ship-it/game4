@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://player_scene"]
+[gd_scene load_steps=5 format=3 uid="uid://player_scene"]
 
 [ext_resource type="Script" path="res://scripts/player/Player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/player/PlayerCamera.gd" id="2_camera"]
+[ext_resource type="SpriteFrames" path="res://assets/sprites/characters/player/calem_walk_frames.tres" id="3_frames"]
 
 [sub_resource type="CapsuleShape2D" id="1_capsule"]
 radius = 4.0
@@ -17,8 +18,14 @@ position = Vector2(0, 4)
 shape = SubResource("1_capsule")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -4)
+sprite_frames = ExtResource("3_frames")
+animation = "idle_down"
+autoplay = "idle_down"
 
 [node name="DebugRect" type="ColorRect" parent="."]
+visible = false
 offset_left = -8.0
 offset_top = -12.0
 offset_right = 8.0
