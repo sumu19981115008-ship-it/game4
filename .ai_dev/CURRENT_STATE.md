@@ -1,8 +1,8 @@
 # 当前开发状态
 
-**最后更新**：2026-05-20（Session 3）  
-**当前阶段**：数据层与UI框架已完成，可加载宝可梦数据、显示对话框与HUD  
-**Godot 版本**：4.x（待确认具体版本）
+**最后更新**：2026-05-20（Session 5）  
+**当前阶段**：美术资源填充完成，玩家精灵已替换，存在行走动画帧错位待修  
+**Godot 版本**：4.6.2.stable
 
 ---
 
@@ -13,37 +13,56 @@
 - [x] 所有 Autoload 单例框架（EventBus / FlagManager / WorldStateManager / SaveManager / PokemonDatabase / MoveDatabase / DialogueManager / AudioManager / TransitionManager / SettingsManager）
 - [x] 数据类定义（PokemonSpeciesData / LearnableMove / EvolutionCondition / MoveData / PokemonEnums / NatureTable）
 - [x] PokemonInstance（含能力值计算公式）
-- [x] Player.gd（8方向移动，加速/摩擦，动画状态机接口）
+- [x] Player.gd（8方向移动，加速/摩擦，动画状态机接入）
 - [x] PlayerCamera.gd（平滑跟随，边界限制，锁定/解锁）
-- [x] ZoneTransition.gd（三种切换模式）
-- [x] StoryTrigger.gd（剧情触发器）
-- [x] BattleStateMachine.gd（回合制状态机框架）
-- [x] BattleCalculator.gd（伤害公式、属性相克、急所）
+- [x] ZoneTransition.gd / StoryTrigger.gd
+- [x] BattleStateMachine.gd / BattleCalculator.gd（属性相克委托 TypeChart）
 - [x] TypeChart.gd（完整18×18属性相克表）
-- [x] CaptureSystem.gd（第六世代捕捉公式）
-- [x] MegaEvolutionSystem.gd（超级进化触发/恢复）
-- [x] CollisionLayers.gd（碰撞层常量）
-- [x] NetworkManager.gd（联机预留框架）
-- [x] Main.gd + Main.tscn（启动场景）
-- [x] Player.tscn（CharacterBody2D + CapsuleShape2D + AnimatedSprite2D + PlayerCamera）
-- [x] TestZone.gd + TestZone.tscn（测试地图，含玩家出生点和调试标签）
+- [x] CaptureSystem.gd / MegaEvolutionSystem.gd
+- [x] CollisionLayers.gd / NetworkManager.gd
+- [x] Main.gd + Main.tscn / Player.tscn / TestZone.tscn
+- [x] DialogueBox.tscn + HUD.tscn（已接入 TestZone）
+- [x] 宝可梦静态精灵图（16只，front/back/shiny_front）
+- [x] 战斗动画精灵表（19只 × 3变体，Showdown GIF 拆帧）
+- [x] PokemonDatabase 精灵图接口（get_sprite_texture / get_anim_frames）
+- [x] 宝可梦数据 .tres（妙蛙种子/小火龙/杰尼龟）
+- [x] 技能数据 .tres（撞击/火焰喷射/水枪/藤鞭/催眠术）
+- [x] 玩家精灵替换为绿宝石 Brendan GBA 原版像素图
 
 ## 待完成（下一步）
 
-- [ ] 在 Godot 编辑器中打开项目，验证 TestZone 可正常运行（玩家能移动）
-- [ ] 将 DialogueBox.tscn 和 HUD.tscn 添加到 TestZone.tscn 场景树中测试
-- [ ] 创建简单的 TileSet 测试地图（带有碰撞墙壁的地面图块）
-- [ ] 获取地图图块集，配置 TileSet 碰撞层，替换 ProceduralMap
-- [ ] 获取玩家行走精灵，配置 AnimatedSprite2D
+- [ ] **【Bug】玩家行走动画帧错位**（最优先）— 详见下方已知问题
+- [ ] 地图图块集配置（TileSet 碰撞），替换 ProceduralMap
+- [ ] 战斗场景 UI（按 03_战斗系统策划案 布局）
+- [ ] HUD 按 05_UI_UX策划案 重做视觉（深夜蓝配色、卢米奥金边框）
+- [ ] 填充更多宝可梦 .tres 数据
 
-## 已知问题 / 注意事项
+## 已知问题
 
-- AudioManager 使用了 @onready，但节点在 _ready 中动态创建，需验证是否兼容
-- HUD.tscn 的 PartyContainer 待战斗系统接入后补充队伍图标显示
+### 🐛 玩家行走动画帧错位（高优先级）
+
+**现象**：WASD 移动时人物像在旋转  
+**根因**：pret/pokeemerald Brendan walking.png 原图9帧中：
+- 帧2、帧5 是侧面帧，不属于 DOWN/UP 方向
+- 当前映射 DOWN=[0,1,3]，但可能仍不完全正确
+
+**下次接手第一件事**：用分格预览图重新逐帧确认正确帧索引，修改 `tools/convert_brendan_walk.py` 的 `SRC_FRAME_ORDER` 并重新运行
+
+**相关文件**：
+- `tools/convert_brendan_walk.py` → 修改 `SRC_FRAME_ORDER` 字典
+- `assets/sprites/characters/player/calem_walk.png` → 重新生成后替换
+
+原图9帧布局（初步分析）：
+```
+帧0: DOWN idle      帧1: DOWN walk步1   帧2: SIDE右侧
+帧3: DOWN walk步2   帧4: UP idle        帧5: SIDE右侧走
+帧6: LEFT idle      帧7: LEFT walk步1   帧8: LEFT walk步2
+```
 
 ## 美术资源状态
 
-- 宝可梦精灵图：✅ 已下载（1/4/7号，front/back/shiny_front/shiny_back/icons 共15张）
+- 宝可梦战斗精灵：✅ 静态PNG（16只）+ 动画精灵表（19只）
+- 玩家行走精灵：✅ 已替换为 Brendan GBA 像素图（动画有 bug 待修）
 - 地图图块集：❌ 未获取（推荐 The Spriters Resource，Pokemon X/Y Tilesets）
+- 字体：❌ 未下载（需 PixelMplus12、m5x7、DotGothic16）
 - UI 图集：❌ 未获取
-- 字体：❌ 未下载（需要 PixelMplus12、m5x7、DotGothic16）

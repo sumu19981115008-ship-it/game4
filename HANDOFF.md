@@ -1,14 +1,14 @@
 # 开发交接文档
 
-**交接时间**：2026-05-20  
+**最后更新**：2026-05-20（Session 5）  
 **当前版本**：v0.1.0  
-**接手时第一件事**：阅读本文档 + `ARCHITECTURE.md` + `.ai_dev/CURRENT_STATE.md`
+**接手时第一件事**：阅读本文档 → `ARCHITECTURE.md` → `.ai_dev/CURRENT_STATE.md`
 
 ---
 
 ## 项目现状一句话总结
 
-底层架构已完成，游戏可以运行——玩家能在程序化生成的测试地图上移动，碰撞系统正常。**下一阶段核心任务是引入美术资源，把测试场景替换为真实画面。**
+底层架构 + 美术资源填充已完成，玩家可在程序化地图上行走并显示 Brendan 像素精灵。**存在一个高优先级 Bug：行走动画帧错位，下次开发第一件事就是修它。**
 
 ---
 
@@ -18,110 +18,98 @@
 
 ---
 
-## 美术资源（最优先任务）
+## 🚨 最高优先级 Bug：行走动画旋转
 
-### 当前占位状态
+**现象**：WASD 移动时人物像在旋转，走路夹杂侧身帧  
+**修法**：
 
-| 资源类型 | 当前状态 | 占位方案 |
-|---------|---------|---------|
-| 玩家精灵 | ❌ 无 | ColorRect 红色方块 |
-| 地图图块 | ❌ 无 | ProceduralMap 程序色块 |
-| 宝可梦精灵 | ❌ 无 | 无 |
-| UI 图集 | ❌ 无 | 无 |
-| 字体 | ❌ 无 | Godot 默认字体 |
-| BGM/SFX | ❌ 无 | 无 |
+1. 打开 `tools/convert_brendan_walk.py`
+2. 找到 `SRC_FRAME_ORDER` 字典，当前值：
+   ```python
+   SRC_FRAME_ORDER = {
+       "down":  [0, 1, 3],
+       "up":    [4, 4, 4],
+       "left":  [6, 7, 8],
+   }
+   ```
+3. 用分格预览图逐帧确认正确索引（运行脚本生成预览）：
+   ```bash
+   python3 -c "
+   from PIL import Image, ImageDraw
+   import numpy as np, subprocess, os
+   # ... 见 .ai_dev/logs/2026-05-20_美术资源填充.md 中的分析
+   "
+   ```
+4. 修改索引后执行 `python3 tools/convert_brendan_walk.py` 重新生成精灵表
+5. Godot 中重新运行验证
 
-### 推荐素材来源
-
-#### 地图图块集（最优先）
-
-**The Spriters Resource** — `www.spriters-resource.com`
-- 搜索：`Pokemon X Y Tilesets` 或 `Pokemon Omega Ruby Tilesets`
-- X/Y 系列图块 16×16 像素，与本项目完全匹配
-- 免费下载，任天堂同人默认不追究（不可商用）
-
-**替代方案**：itch.io 搜索 `pokemon tileset free`，有社区制作的开源版本
-
-#### 宝可梦精灵图
-
-**The Spriters Resource**
-- 搜索：`Pokemon X Y Pokemon Sprites`（正面/背面战斗精灵，约80×80px）
-- 搜索：`Pokemon X Y Overworld`（俯视角行走精灵，约32×32px 4方向8帧）
-
-#### 玩家角色精灵
-
-**The Spriters Resource**
-- 搜索：`Pokemon Legends Arceus Player`（最接近本作风格）
-- 或用 X/Y 主角精灵替代（Calem/Serena）
-- 需要：上下左右4方向 × 待机/行走/奔跑 = 12套动画
-
-#### 字体（免费商用）
-
-| 字体 | 用途 | 下载 |
-|------|------|------|
-| DotGothic16 | 主要 UI 文字（中文支持） | Google Fonts 搜索 DotGothic16 |
-| m5x7 | 英文标题/数字 | itch.io 搜索 m5x7 |
-| PixelMplus12 | 中文正文备用 | github.com/itouhiro/PixelMplus |
-
-### 资源放置规范
-
+**原图9帧布局参考**（初步分析，需核实）：
 ```
-assets/
-├── sprites/
-│   ├── pokemon/
-│   │   ├── front/          # 战斗正面精灵：001_bulbasaur.png ...
-│   │   ├── back/           # 战斗背面精灵
-│   │   ├── overworld/      # 俯视角行走：001_bulbasaur_walk.png
-│   │   └── icons/          # 图鉴小图标（32×32）
-│   ├── characters/
-│   │   ├── player/         # 主角行走精灵表（spritesheet）
-│   │   └── npcs/           # NPC 精灵
-│   └── maps/
-│       └── tilesets/       # 地图图块集：lumiose_city.png（单张大图）
-├── fonts/                  # .ttf / .otf 文件
-└── audio/
-    ├── bgm/                # .ogg 格式（Godot 推荐）
-    └── sfx/
+帧0: DOWN idle      帧1: DOWN walk步1   帧2: 侧面右(不用)
+帧3: DOWN walk步2   帧4: UP idle        帧5: 侧面右走(不用)
+帧6: LEFT idle      帧7: LEFT walk步1   帧8: LEFT walk步2
 ```
-
-### 引入美术资源后需要做的工作
-
-1. **图块集**：在 Godot 编辑器的 TileSet 面板中，导入图片后框选每个图块，为有碰撞的图块（墙壁/建筑）添加物理层
-2. **玩家精灵**：在 Player.tscn 的 AnimatedSprite2D 节点上，新建 SpriteFrames 资源，按方向和动作添加帧
-3. **替换 ProceduralMap**：当图块集配置完成后，将 TestZone.tscn 中的 ProceduralMap 节点替换为 TileMapLayer 节点，参照 `ARCHITECTURE.md` 的6层结构
 
 ---
 
-## 当前代码结构关键文件
+## 当前资源状态
+
+| 资源 | 状态 |
+|------|------|
+| 宝可梦静态精灵图 | ✅ 16只（front/back/shiny） |
+| 战斗动画精灵表 | ✅ 19只 × 3变体（Showdown GIF 拆帧） |
+| 玩家行走精灵 | ⚠️ 已替换为 Brendan GBA 像素图，动画帧有 bug |
+| 宝可梦 .tres 数据 | ✅ 3只（妙蛙种子/小火龙/杰尼龟） |
+| 技能 .tres 数据 | ✅ 5个（撞击/火焰喷射/水枪/藤鞭/催眠术） |
+| DialogueBox / HUD | ✅ 已接入 TestZone |
+| 地图图块集 | ❌ 未获取 |
+| 字体 | ❌ 未下载 |
+| UI 图集 | ❌ 未获取 |
+
+---
+
+## 代码关键文件速查
 
 | 文件 | 作用 | 注意事项 |
 |------|------|---------|
-| `scripts/player/Player.gd` | 玩家移动逻辑 | 已简化信号类型为int，动画判断有sprite_frames保护 |
+| `scripts/player/Player.gd` | 玩家移动+动画状态机 | `var anim: String =` 不能用 `:=`，Godot 4.6 无法推断类型 |
 | `scripts/player/PlayerCamera.gd` | 相机跟随/边界 | zoom=2x，基准分辨率320×180 |
+| `autoloads/PokemonDatabase.gd` | 宝可梦数据+精灵图接口 | get_sprite_texture() / get_anim_frames() |
 | `scripts/world/ProceduralMap.gd` | 临时程序化地图 | 将来替换为TileMap时删除此文件 |
 | `autoloads/EventBus.gd` | 全局信号总线 | 所有跨系统通信走这里 |
-| `autoloads/SaveManager.gd` | 存档系统 | 注意：方法名是get_save_meta()不是get_meta() |
-| `autoloads/AudioManager.gd` | 音频 | bgm_player/sfx_player是普通变量，不是@onready |
-| `scripts/globals/CollisionLayers.gd` | 碰撞层常量 | extends Node（无class_name，避免与Autoload名冲突） |
+| `autoloads/SaveManager.gd` | 存档系统 | 方法名是 get_save_meta() 不是 get_meta() |
+| `autoloads/AudioManager.gd` | 音频 | bgm_player/sfx_player 是普通变量，不是 @onready |
+| `scripts/globals/CollisionLayers.gd` | 碰撞层常量 | extends Node（无 class_name，避免与 Autoload 名冲突） |
+| `tools/convert_brendan_walk.py` | 玩家精灵生成工具 | 修改 SRC_FRAME_ORDER 后重新运行即可更新精灵表 |
 
 ---
 
-## 已知问题 / 踩坑记录
+## Godot 4.6 踩坑记录
 
-1. **Godot 4.6 类型推断收紧**：`:=` 无法从 `Array/PackedStringArray` 等 Variant 子类推断，必须显式写类型（如 `var x: PackedStringArray = ...`）
-2. **Autoload 与 class_name 不能同名**：如果脚本注册为 Autoload `Foo`，就不能再写 `class_name Foo`
+1. **类型推断收紧**：`:=` 无法从 `Array/PackedStringArray` 等 Variant 子类推断，必须显式写类型（如 `var x: String = ...`）
+2. **Autoload 与 class_name 不能同名**：脚本注册为 Autoload `Foo` 就不能再写 `class_name Foo`
 3. **`_ready()` 中不能直接调用 `change_scene_to_file`**：必须用 `call_deferred`
-4. **编辑器工具栏「输入」按钮**：每次 F5 运行后必须点亮，否则游戏收不到键盘输入
-5. **`@onready` 与动态 `add_child`**：`@onready` 在 `_ready()` 执行前赋值，如果节点是在 `_ready()` 里才创建的，`@onready` 会拿到 null
+4. **编辑器工具栏「输入」按钮**：每次 F5 运行后必须点亮，否则收不到键盘输入
+5. **`@onready` 与动态 `add_child`**：`@onready` 在 `_ready()` 执行前赋值，动态创建的节点会拿到 null
+6. **CanvasLayer 的显隐**：不是 CanvasItem，`hide()/show()` 无效，必须用 `visible = false/true`
+
+---
+
+## 美术资源来源参考
+
+| 资源 | 来源 | URL规则 |
+|------|------|---------|
+| 宝可梦静态精灵 | PokeAPI / jsDelivr | `https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/{id}.png` |
+| 战斗动画 GIF | Pokémon Showdown | `https://play.pokemonshowdown.com/sprites/ani/{英文名}.gif`（需浏览器 UA） |
+| 训练师行走图 | pret/pokeemerald | `https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/{人物}/walking.png` |
+| 地图图块集 | The Spriters Resource | 搜索 `Pokemon X Y Tilesets`（16×16，免费同人用途） |
 
 ---
 
 ## 下一步开发优先级
 
-1. **【美术】** 获取地图图块集并在编辑器配置 TileSet 碰撞
-2. **【美术】** 获取玩家行走精灵并配置 AnimatedSprite2D 动画帧
-3. **【功能】** 对话框 UI（DialogueBox.tscn，CanvasLayer layer=5）
-4. **【功能】** HUD 场景（血量/等级/时间，layer=10）
-5. **【数据】** 填充3只测试宝可梦 .tres 数据（小火龙/妙蛙种子/杰尼龟）
-6. **【数据】** 填充5个测试技能 .tres 数据
-7. **【修复】** BattleCalculator 内联 TYPE_CHART 与 TypeChart.gd 统一
+1. **【Bug】** 修复玩家行走动画帧错位（见上方说明）
+2. **【美术】** 获取地图图块集，配置 TileSet 碰撞，替换 ProceduralMap
+3. **【UI】** HUD 按 `docs/策划案/05_UI_UX策划案.md` 重做视觉（深夜蓝+卢米奥金）
+4. **【功能】** 战斗场景 UI（按 `docs/策划案/03_战斗系统策划案.md` 布局）
+5. **【数据】** 填充更多宝可梦 .tres（建议先做卡洛斯御三家 650/653/656）
