@@ -28,6 +28,26 @@ func get_species(species_id: int) -> PokemonSpeciesData:
 func get_total_species_count() -> int:
 	return _species_cache.size()
 
+func get_sprite_path(pokemon_id: int, back: bool = false, shiny: bool = false) -> String:
+	if back:
+		# 背面无闪光单独目录，闪光背面放 shiny_back
+		if shiny:
+			return "res://assets/sprites/pokemon/shiny_back/%d.png" % pokemon_id
+		return "res://assets/sprites/pokemon/back/%d.png" % pokemon_id
+	if shiny:
+		return "res://assets/sprites/pokemon/shiny_front/%d.png" % pokemon_id
+	return "res://assets/sprites/pokemon/front/%d.png" % pokemon_id
+
+func get_sprite_texture(pokemon_id: int, back: bool = false, shiny: bool = false) -> Texture2D:
+	var path := get_sprite_path(pokemon_id, back, shiny)
+	if ResourceLoader.exists(path):
+		return load(path)
+	# 回退到正面普通图
+	var fallback := "res://assets/sprites/pokemon/front/%d.png" % pokemon_id
+	if ResourceLoader.exists(fallback):
+		return load(fallback)
+	return null
+
 func create_pokemon(species_id: int, level: int) -> PokemonInstance:
 	var instance := PokemonInstance.new()
 	instance.species_id = species_id
