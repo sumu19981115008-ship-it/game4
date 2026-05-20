@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/moves/MoveData.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+move_id = 47
+move_name = "催眠术"
+description = "用催眠般的眼神注视对手，使其陷入睡眠状态。"
+type = 10
+category = 2
+power = 0
+accuracy = 60
+pp = 20
+priority = 0
+effect_chance = 100
+effect_id = 6
+secondary_effect_id = 0
+target = 0
+makes_contact = false
+is_sound_based = false
+is_punch_based = false
+is_bite_based = false
+ignores_accuracy = false
+ignores_burn = false
+crit_bonus = 0

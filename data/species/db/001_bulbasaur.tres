@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/species/PokemonSpeciesData.gd" id="1_species"]
+
+[resource]
+script = ExtResource("1_species")
+species_id = 1
+species_name = "妙蛙种子"
+species_name_en = "Bulbasaur"
+category = "种子宝可梦"
+pokedex_entry = "背上有植物种子，从出生便一起成长。随着成长，种子会越来越大。"
+type1 = 4
+type2 = 7
+has_secondary_type = true
+base_hp = 45
+base_attack = 49
+base_defense = 49
+base_sp_attack = 65
+base_sp_defense = 65
+base_speed = 45
+ability1_id = 65
+ability2_id = -1
+hidden_ability_id = 34
+growth_rate = 3
+base_experience_yield = 64
+ev_yield_hp = 0
+ev_yield_attack = 0
+ev_yield_defense = 0
+ev_yield_sp_attack = 1
+ev_yield_sp_defense = 0
+ev_yield_speed = 0
+catch_rate = 45
+base_friendship = 70
+egg_group1 = 0
+egg_group2 = 6
+hatch_steps = 5120
+gender_ratio = 0.875
+height_m = 0.7
+weight_kg = 6.9
+learnable_moves = []
+evolutions = []
+pre_evolution_id = -1
+can_mega_evolve = false
+mega_species_id = -1
+mega_stone_item_id = -1

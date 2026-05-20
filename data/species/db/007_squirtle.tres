@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/species/PokemonSpeciesData.gd" id="1_species"]
+
+[resource]
+script = ExtResource("1_species")
+species_id = 7
+species_name = "杰尼龟"
+species_name_en = "Squirtle"
+category = "小龟宝可梦"
+pokedex_entry = "遭受攻击时会缩进坚固的龟壳中，再从壳中喷射精准的水柱进行反击。"
+type1 = 2
+type2 = 0
+has_secondary_type = false
+base_hp = 44
+base_attack = 48
+base_defense = 65
+base_sp_attack = 50
+base_sp_defense = 64
+base_speed = 43
+ability1_id = 67
+ability2_id = -1
+hidden_ability_id = 11
+growth_rate = 3
+base_experience_yield = 63
+ev_yield_hp = 0
+ev_yield_attack = 0
+ev_yield_defense = 1
+ev_yield_sp_attack = 0
+ev_yield_sp_defense = 0
+ev_yield_speed = 0
+catch_rate = 45
+base_friendship = 70
+egg_group1 = 0
+egg_group2 = 9
+hatch_steps = 5120
+gender_ratio = 0.875
+height_m = 0.5
+weight_kg = 9.0
+learnable_moves = []
+evolutions = []
+pre_evolution_id = -1
+can_mega_evolve = false
+mega_species_id = -1
+mega_stone_item_id = -1

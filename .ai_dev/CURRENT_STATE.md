@@ -1,7 +1,7 @@
 # 当前开发状态
 
-**最后更新**：2026-05-20（Session 2）  
-**当前阶段**：基础场景已创建，可在 Godot 编辑器中运行测试  
+**最后更新**：2026-05-20（Session 3）  
+**当前阶段**：数据层与UI框架已完成，可加载宝可梦数据、显示对话框与HUD  
 **Godot 版本**：4.x（待确认具体版本）
 
 ---
@@ -31,21 +31,19 @@
 ## 待完成（下一步）
 
 - [ ] 在 Godot 编辑器中打开项目，验证 TestZone 可正常运行（玩家能移动）
-- [ ] DialogueBox UI 场景（CanvasLayer layer=5）
-- [ ] HUD 场景（血量/等级/时间）
-- [ ] 填充至少3只宝可梦的测试数据（.tres文件，建议小火龙/妙蛙种子/杰尼龟）
-- [ ] 填充至少5个技能的测试数据（.tres文件）
+- [ ] 将 DialogueBox.tscn 和 HUD.tscn 添加到 TestZone.tscn 场景树中测试
 - [ ] 创建简单的 TileSet 测试地图（带有碰撞墙壁的地面图块）
+- [ ] 获取地图图块集，配置 TileSet 碰撞层，替换 ProceduralMap
+- [ ] 获取玩家行走精灵，配置 AnimatedSprite2D
 
 ## 已知问题 / 注意事项
 
-- BattleCalculator 的 TYPE_CHART 已完整实现于 TypeChart.gd，但 BattleCalculator 内仍为简化版，两者需统一
 - AudioManager 使用了 @onready，但节点在 _ready 中动态创建，需验证是否兼容
-- 美术资源目前全为占位符，需等待素材确认后填充
+- HUD.tscn 的 PartyContainer 待战斗系统接入后补充队伍图标显示
 
 ## 美术资源状态
 
-- 宝可梦精灵图：❌ 未获取
-- 地图图块集：❌ 未获取
+- 宝可梦精灵图：✅ 已下载（1/4/7号，front/back/shiny_front/shiny_back/icons 共15张）
+- 地图图块集：❌ 未获取（推荐 The Spriters Resource，Pokemon X/Y Tilesets）
 - UI 图集：❌ 未获取
 - 字体：❌ 未下载（需要 PixelMplus12、m5x7、DotGothic16）

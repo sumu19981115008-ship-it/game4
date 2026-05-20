@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/species/PokemonSpeciesData.gd" id="1_species"]
+
+[resource]
+script = ExtResource("1_species")
+species_id = 4
+species_name = "小火龙"
+species_name_en = "Charmander"
+category = "蜥蜴宝可梦"
+pokedex_entry = "尾巴尖端燃烧着火焰。据说若是这火焰熄灭，这只宝可梦便会死亡。"
+type1 = 1
+type2 = 0
+has_secondary_type = false
+base_hp = 39
+base_attack = 52
+base_defense = 43
+base_sp_attack = 60
+base_sp_defense = 50
+base_speed = 65
+ability1_id = 66
+ability2_id = -1
+hidden_ability_id = 94
+growth_rate = 1
+base_experience_yield = 62
+ev_yield_hp = 0
+ev_yield_attack = 0
+ev_yield_defense = 0
+ev_yield_sp_attack = 0
+ev_yield_sp_defense = 0
+ev_yield_speed = 1
+catch_rate = 45
+base_friendship = 70
+egg_group1 = 0
+egg_group2 = 13
+hatch_steps = 5120
+gender_ratio = 0.875
+height_m = 0.6
+weight_kg = 8.5
+learnable_moves = []
+evolutions = []
+pre_evolution_id = -1
+can_mega_evolve = false
+mega_species_id = -1
+mega_stone_item_id = -1

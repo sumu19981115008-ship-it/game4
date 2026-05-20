@@ -1,26 +1,5 @@
 class_name BattleCalculator
 
-# 完整18属性相克矩阵（简化版，完整数据需填充）
-const TYPE_CHART: Dictionary = {
-	# 格式: 攻击属性 -> { 防御属性: 倍率 }
-	PokemonEnums.ElementType.NORMAL: {
-		PokemonEnums.ElementType.ROCK: 0.5,
-		PokemonEnums.ElementType.GHOST: 0.0,
-		PokemonEnums.ElementType.STEEL: 0.5,
-	},
-	PokemonEnums.ElementType.FIRE: {
-		PokemonEnums.ElementType.FIRE: 0.5,
-		PokemonEnums.ElementType.WATER: 0.5,
-		PokemonEnums.ElementType.GRASS: 2.0,
-		PokemonEnums.ElementType.ICE: 2.0,
-		PokemonEnums.ElementType.BUG: 2.0,
-		PokemonEnums.ElementType.ROCK: 0.5,
-		PokemonEnums.ElementType.DRAGON: 0.5,
-		PokemonEnums.ElementType.STEEL: 2.0,
-	},
-	# TODO: 补全所有18×18属性关系
-}
-
 class DamageResult:
 	var damage: int = 0
 	var is_critical: bool = false
@@ -89,10 +68,8 @@ static func calculate_damage(
 
 static func get_type_effectiveness(move_type: PokemonEnums.ElementType, defender_types: Array) -> float:
 	var multiplier := 1.0
-	if TYPE_CHART.has(move_type):
-		for def_type in defender_types:
-			if TYPE_CHART[move_type].has(def_type):
-				multiplier *= TYPE_CHART[move_type][def_type]
+	for def_type in defender_types:
+		multiplier *= TypeChart.get_effectiveness(move_type, def_type)
 	return multiplier
 
 static func roll_critical(crit_level: int) -> bool:

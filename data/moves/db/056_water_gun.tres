@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/moves/MoveData.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+move_id = 56
+move_name = "水枪"
+description = "向对手猛力喷射水柱进行攻击。"
+type = 2
+category = 1
+power = 40
+accuracy = 100
+pp = 25
+priority = 0
+effect_chance = 0
+effect_id = 0
+secondary_effect_id = 0
+target = 0
+makes_contact = false
+is_sound_based = false
+is_punch_based = false
+is_bite_based = false
+ignores_accuracy = false
+ignores_burn = false
+crit_bonus = 0

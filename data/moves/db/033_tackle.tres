@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/moves/MoveData.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+move_id = 33
+move_name = "撞击"
+description = "用全身猛力撞击对手进行攻击。"
+type = 0
+category = 0
+power = 40
+accuracy = 100
+pp = 35
+priority = 0
+effect_chance = 0
+effect_id = 0
+secondary_effect_id = 0
+target = 0
+makes_contact = true
+is_sound_based = false
+is_punch_based = false
+is_bite_based = false
+ignores_accuracy = false
+ignores_burn = false
+crit_bonus = 0

@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/moves/MoveData.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+move_id = 53
+move_name = "火焰喷射"
+description = "喷出猛烈的火焰攻击对手，有时会让对手陷入灼伤状态。"
+type = 1
+category = 1
+power = 90
+accuracy = 100
+pp = 15
+priority = 0
+effect_chance = 10
+effect_id = 1
+secondary_effect_id = 0
+target = 0
+makes_contact = false
+is_sound_based = false
+is_punch_based = false
+is_bite_based = false
+ignores_accuracy = false
+ignores_burn = false
+crit_bonus = 0
