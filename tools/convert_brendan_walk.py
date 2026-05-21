@@ -25,14 +25,13 @@ OUT_PATH  = GAME_ROOT / "assets" / "sprites" / "characters" / "player" / "calem_
 TMP       = Path(os.environ.get("TEMP", "/tmp")) / "brendan_walk_src.png"
 
 # 原始精灵表帧映射（144×32，9帧横排，每帧16×32）
-# 实际帧内容（肉眼逐帧确认）：
-#   0: DOWN idle       1: DOWN walk步1    2: SIDE右 idle
-#   3: DOWN walk步2    4: UP idle         5: SIDE右 walk
+# 实际帧内容（逐帧目视确认）：
+#   0: DOWN idle       1: DOWN walk步1    2: DOWN walk步2
+#   3: UP   idle       4: UP   walk步1    5: UP   walk步2
 #   6: LEFT idle       7: LEFT walk步1    8: LEFT walk步2
-# 帧2和帧5是侧面帧，不能放进 DOWN/UP 动画，否则走路时夹侧身看起来像旋转
 SRC_FRAME_ORDER = {
-    "down":  [0, 1, 3],   # 跳过帧2（侧面），用帧3作第二步
-    "up":    [4, 4, 4],   # 只有1帧朝上，重复以保持3帧结构
+    "down":  [0, 1, 2],
+    "up":    [3, 4, 5],
     "left":  [6, 7, 8],
     # right = left 水平翻转
 }

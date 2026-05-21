@@ -1,116 +1,79 @@
-[gd_resource type="SpriteFrames" load_steps=14 format=3]
+[gd_resource type="SpriteFrames" load_steps=13 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/calem_walk.png" id="1_sheet"]
-
-[sub_resource type="AtlasTexture" id="AT_d0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(0, 0, 16, 32)
-
-[sub_resource type="AtlasTexture" id="AT_d1"]
-atlas = ExtResource("1_sheet")
-region = Rect2(16, 0, 16, 32)
-
-[sub_resource type="AtlasTexture" id="AT_d2"]
-atlas = ExtResource("1_sheet")
-region = Rect2(32, 0, 16, 32)
-
-[sub_resource type="AtlasTexture" id="AT_l0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(0, 32, 16, 32)
-
-[sub_resource type="AtlasTexture" id="AT_l1"]
-atlas = ExtResource("1_sheet")
-region = Rect2(16, 32, 16, 32)
-
-[sub_resource type="AtlasTexture" id="AT_l2"]
-atlas = ExtResource("1_sheet")
-region = Rect2(32, 32, 16, 32)
-
-[sub_resource type="AtlasTexture" id="AT_r0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(0, 64, 16, 32)
-
-[sub_resource type="AtlasTexture" id="AT_r1"]
-atlas = ExtResource("1_sheet")
-region = Rect2(16, 64, 16, 32)
-
-[sub_resource type="AtlasTexture" id="AT_r2"]
-atlas = ExtResource("1_sheet")
-region = Rect2(32, 64, 16, 32)
-
-[sub_resource type="AtlasTexture" id="AT_u0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(0, 96, 16, 32)
-
-[sub_resource type="AtlasTexture" id="AT_u1"]
-atlas = ExtResource("1_sheet")
-region = Rect2(16, 96, 16, 32)
-
-[sub_resource type="AtlasTexture" id="AT_u2"]
-atlas = ExtResource("1_sheet")
-region = Rect2(32, 96, 16, 32)
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/下/idle.png" id="d_idle"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/下/walk_0.png" id="d_w0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/下/walk_1.png" id="d_w1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/上/idle.png" id="u_idle"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/上/walk_0.png" id="u_w0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/上/walk_1.png" id="u_w1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/左/idle.png" id="l_idle"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/左/walk_0.png" id="l_w0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/左/walk_1.png" id="l_w1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/右/idle.png" id="r_idle"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/右/walk_0.png" id="r_w0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/player/右/walk_1.png" id="r_w1"]
 
 [resource]
 animations = [{
 "frames": [
-{"duration": 0.15, "texture": SubResource("AT_d0")},
-{"duration": 0.15, "texture": SubResource("AT_d1")},
-{"duration": 0.15, "texture": SubResource("AT_d2")}
+{"duration": 0.15, "texture": ExtResource("d_w0")},
+{"duration": 0.15, "texture": ExtResource("d_w1")},
+{"duration": 0.15, "texture": ExtResource("d_w0")}
 ],
 "loop": true,
 "name": &"walk_down",
 "speed": 1.0
 }, {
 "frames": [
-{"duration": 1.0, "texture": SubResource("AT_d0")}
+{"duration": 1.0, "texture": ExtResource("d_idle")}
 ],
 "loop": false,
 "name": &"idle_down",
 "speed": 1.0
 }, {
 "frames": [
-{"duration": 0.15, "texture": SubResource("AT_l0")},
-{"duration": 0.15, "texture": SubResource("AT_l1")},
-{"duration": 0.15, "texture": SubResource("AT_l2")}
+{"duration": 0.15, "texture": ExtResource("l_w0")},
+{"duration": 0.15, "texture": ExtResource("l_w1")},
+{"duration": 0.15, "texture": ExtResource("l_w0")}
 ],
 "loop": true,
 "name": &"walk_left",
 "speed": 1.0
 }, {
 "frames": [
-{"duration": 1.0, "texture": SubResource("AT_l0")}
+{"duration": 1.0, "texture": ExtResource("l_idle")}
 ],
 "loop": false,
 "name": &"idle_left",
 "speed": 1.0
 }, {
 "frames": [
-{"duration": 0.15, "texture": SubResource("AT_r0")},
-{"duration": 0.15, "texture": SubResource("AT_r1")},
-{"duration": 0.15, "texture": SubResource("AT_r2")}
+{"duration": 0.15, "texture": ExtResource("r_w0")},
+{"duration": 0.15, "texture": ExtResource("r_w1")},
+{"duration": 0.15, "texture": ExtResource("r_w0")}
 ],
 "loop": true,
 "name": &"walk_right",
 "speed": 1.0
 }, {
 "frames": [
-{"duration": 1.0, "texture": SubResource("AT_r0")}
+{"duration": 1.0, "texture": ExtResource("r_idle")}
 ],
 "loop": false,
 "name": &"idle_right",
 "speed": 1.0
 }, {
 "frames": [
-{"duration": 0.15, "texture": SubResource("AT_u0")},
-{"duration": 0.15, "texture": SubResource("AT_u1")},
-{"duration": 0.15, "texture": SubResource("AT_u2")}
+{"duration": 0.15, "texture": ExtResource("u_w0")},
+{"duration": 0.15, "texture": ExtResource("u_w1")},
+{"duration": 0.15, "texture": ExtResource("u_w0")}
 ],
 "loop": true,
 "name": &"walk_up",
 "speed": 1.0
 }, {
 "frames": [
-{"duration": 1.0, "texture": SubResource("AT_u0")}
+{"duration": 1.0, "texture": ExtResource("u_idle")}
 ],
 "loop": false,
 "name": &"idle_up",

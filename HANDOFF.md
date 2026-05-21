@@ -18,36 +18,26 @@
 
 ---
 
-## 🚨 最高优先级 Bug：行走动画旋转
+## ✅ 已修复：行走动画旋转（2026-05-21）
 
 **现象**：WASD 移动时人物像在旋转，走路夹杂侧身帧  
-**修法**：
+**根因**：`SRC_FRAME_ORDER` 中 down/up 帧索引错误（误以为帧2/5是侧面帧）  
+**已修复**：逐帧目视确认后修正索引，重新生成精灵表
 
-1. 打开 `tools/convert_brendan_walk.py`
-2. 找到 `SRC_FRAME_ORDER` 字典，当前值：
-   ```python
-   SRC_FRAME_ORDER = {
-       "down":  [0, 1, 3],
-       "up":    [4, 4, 4],
-       "left":  [6, 7, 8],
-   }
-   ```
-3. 用分格预览图逐帧确认正确索引（运行脚本生成预览）：
-   ```bash
-   python3 -c "
-   from PIL import Image, ImageDraw
-   import numpy as np, subprocess, os
-   # ... 见 .ai_dev/logs/2026-05-20_美术资源填充.md 中的分析
-   "
-   ```
-4. 修改索引后执行 `python3 tools/convert_brendan_walk.py` 重新生成精灵表
-5. Godot 中重新运行验证
-
-**原图9帧布局参考**（初步分析，需核实）：
+原图9帧实际布局（已目视确认）：
 ```
-帧0: DOWN idle      帧1: DOWN walk步1   帧2: 侧面右(不用)
-帧3: DOWN walk步2   帧4: UP idle        帧5: 侧面右走(不用)
-帧6: LEFT idle      帧7: LEFT walk步1   帧8: LEFT walk步2
+帧0: DOWN idle   帧1: DOWN walk步1   帧2: DOWN walk步2
+帧3: UP   idle   帧4: UP   walk步1   帧5: UP   walk步2
+帧6: LEFT idle   帧7: LEFT walk步1   帧8: LEFT walk步2
+```
+
+当前 `SRC_FRAME_ORDER`（正确值）：
+```python
+SRC_FRAME_ORDER = {
+    "down":  [0, 1, 2],
+    "up":    [3, 4, 5],
+    "left":  [6, 7, 8],
+}
 ```
 
 ---
@@ -58,7 +48,7 @@
 |------|------|
 | 宝可梦静态精灵图 | ✅ 16只（front/back/shiny） |
 | 战斗动画精灵表 | ✅ 19只 × 3变体（Showdown GIF 拆帧） |
-| 玩家行走精灵 | ⚠️ 已替换为 Brendan GBA 像素图，动画帧有 bug |
+| 玩家行走精灵 | ✅ Brendan GBA 像素图，帧索引已修正 |
 | 宝可梦 .tres 数据 | ✅ 3只（妙蛙种子/小火龙/杰尼龟） |
 | 技能 .tres 数据 | ✅ 5个（撞击/火焰喷射/水枪/藤鞭/催眠术） |
 | DialogueBox / HUD | ✅ 已接入 TestZone |
@@ -108,8 +98,7 @@
 
 ## 下一步开发优先级
 
-1. **【Bug】** 修复玩家行走动画帧错位（见上方说明）
-2. **【美术】** 获取地图图块集，配置 TileSet 碰撞，替换 ProceduralMap
+1. **【美术】** 获取地图图块集，配置 TileSet 碰撞，替换 ProceduralMap
 3. **【UI】** HUD 按 `docs/策划案/05_UI_UX策划案.md` 重做视觉（深夜蓝+卢米奥金）
 4. **【功能】** 战斗场景 UI（按 `docs/策划案/03_战斗系统策划案.md` 布局）
 5. **【数据】** 填充更多宝可梦 .tres（建议先做卡洛斯御三家 650/653/656）
