@@ -1,7 +1,7 @@
 # 当前开发状态
 
-**最后更新**：2026-05-21（Session 10）  
-**当前阶段**：玩家行走动画帧修正完成，各方向帧已拆分至独立文件夹  
+**最后更新**：2026-05-21（Session 12）  
+**当前阶段**：三张新地图全部完成：StarterVillage / RouteForest / NovaTown 渲染脚本 + PNG + JSON + .gd + .tscn + ZoneTransition 出口全部接入  
 **Godot 版本**：4.6.2.stable
 
 ---
@@ -52,7 +52,16 @@
 
 ## 待完成（下一步）
 
-- [ ] **更多城镇/路线地图渲染**（Route102、Rustboro City 等）
+- [x] Route 102 渲染完成（tools/render_route102.py，800×320 PNG，含碰撞 JSON）
+- [x] Route102.gd / Route102.tscn 创建完成
+- [x] 地图切换系统完成（ZoneTransition + pending_spawn_pos + 6场景出口节点）
+- [x] StarterVillage 渲染完成（22×20，352×320 PNG，含新手村/研究所/出口→RouteForest）
+- [x] RouteForest 渲染完成（40×30，640×480 PNG，漆黑魅影风格密集高草丛/分叉路/水塘）
+- [x] NovaTown 渲染完成（30×28，480×448 PNG，含宝可梦中心/道馆/民居/喷泉广场）
+- [x] StarterVillage.gd / StarterVillage.tscn 创建完成（南侧出口→RouteForest）
+- [x] RouteForest.gd / RouteForest.tscn 创建完成（北→StarterVillage，南→NovaTown）
+- [x] NovaTown.gd / NovaTown.tscn 创建完成（北侧出口→RouteForest）
+- [ ] **更多城镇/路线地图渲染**（Rustboro City、Route 103 等）
 - [ ] 战斗场景 UI
 - [ ] HUD 视觉重做
 - [ ] 战斗场景 UI（按 03_战斗系统策划案 布局）
@@ -89,6 +98,6 @@ python3 tools/render_littleroot.py
 - 宝可梦战斗精灵：✅ 静态PNG（16只）+ 动画精灵表（19只）
 - 玩家行走精灵：✅ Calem/Brendan GBA 像素图，8方向动画全部修正，各帧独立存入 上/下/左/右 文件夹
 - 地图图块集：✅ 10套 tileset（tiles.png + palettes）已下载
-- 地图渲染：✅ Littleroot Town / Route 101 / Oldale Town（各 320×320）/ Petalburg City（480×480）/ Pokemon Center 1F（224×144）
+- 地图渲染：✅ Littleroot Town / Route 101 / Oldale Town（各 320×320）/ Petalburg City（480×480）/ Pokemon Center 1F（224×144）/ StarterVillage（352×320）/ RouteForest（640×480）/ NovaTown（480×448）
 - 字体：❌ 未下载（需 PixelMplus12、m5x7、DotGothic16）
 - UI 图集：❌ 未获取

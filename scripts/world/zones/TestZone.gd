@@ -2,7 +2,7 @@ class_name TestZone
 extends Node2D
 
 @onready var debug_label: Label = $DebugCanvas/DebugLabel
-@onready var proc_map: ProceduralMap = $ProceduralMap
+@onready var proc_map: TileMapZone = $TileMapZone
 
 var _player: CharacterBody2D
 
@@ -12,12 +12,7 @@ func _ready() -> void:
 		_player.global_position = proc_map.get_spawn_position()
 		var bounds := proc_map.get_bounds()
 		var cam: Camera2D = _player.get_node("PlayerCamera")
-		cam.set_boundary(
-			int(bounds.position.x),
-			int(bounds.end.x),
-			int(bounds.position.y),
-			int(bounds.end.y)
-		)
+		cam.set_boundary(int(bounds.size.x), int(bounds.size.y))
 	else:
 		debug_label.text = "错误：player 节点未找到"
 	_spawn_pikachu_preview()

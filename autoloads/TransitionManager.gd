@@ -38,7 +38,8 @@ func transition_to_battle() -> void:
 func transition_from_battle() -> void:
 	await fade_from_black(0.4)
 
-func transition_zone(target_scene: String) -> void:
+func transition_zone(target_scene: String, spawn_pos: Vector2 = Vector2(-1, -1)) -> void:
+	WorldStateManager.pending_spawn_pos = spawn_pos
 	await fade_to_black(0.3)
 	get_tree().change_scene_to_file(target_scene)
 	await fade_from_black(0.3)

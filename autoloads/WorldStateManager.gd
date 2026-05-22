@@ -1,5 +1,8 @@
 extends Node
 
+# 场景切换时传递的目标出生点（Vector2(-1,-1) 表示无待处理数据，用场景默认出生点）
+var pending_spawn_pos: Vector2 = Vector2(-1, -1)
+
 # 区域可访问状态
 var zone_access: Dictionary = {
 	1: true, 2: true, 3: false, 4: true,
