@@ -1,0 +1,33 @@
+{
+  "width": 3,
+  "height": 4,
+  "tile_px": 16,
+  "collision": [
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      0,
+      1
+    ]
+  ],
+  "entrance": {
+    "col": 1,
+    "row": 3
+  },
+  "interior_target": "PokemonCenter_1F",
+  "description": "宝可梦中心外观，漆黑魅影风格，橙棕圆顶+蓝色玻璃入口，3×4格"
+}

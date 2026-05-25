@@ -118,12 +118,17 @@ def get_tile_rgba(arr, cols_per_row, tile_idx, hflip, vflip, pal_slot, combined,
     return rgba
 
 
+# 这些 metatile 在 primary_general 里是超市图块，宝可梦中心场景必须用 secondary_petalburg 定义
+_PTB_OVERRIDE = {65, 66, 67, 96}
+
 def render_metatile(global_idx, gen_meta_raw, pet_meta_raw,
                     gen_arr, gen_cols, pet_arr, pet_cols, combined):
-    is_pet = global_idx >= 512
-    if is_pet:
+    if global_idx >= 512:
         raw_data = pet_meta_raw
         off = (global_idx - 512) * 16
+    elif global_idx in _PTB_OVERRIDE:
+        raw_data = pet_meta_raw
+        off = global_idx * 16
     else:
         raw_data = gen_meta_raw
         off = global_idx * 16

@@ -19,12 +19,59 @@ from pathlib import Path
 from PIL import Image
 from render_route101 import (
     dl, parse_pal, load_pals, make_combined,
-    _safe_color, get_tile_rgba, render_metatile
+    _safe_color, get_tile_rgba
 )
+import struct as _struct
+
+# gen 里这些 metatile 是超市图块，宝可梦中心场景必须用 secondary_petalburg 定义
+_PTB_OVERRIDE = {65, 66, 67, 96}
+
+def render_metatile(global_idx, gen_meta_raw, pet_meta_raw,
+                    gen_arr, gen_cols, pet_arr, pet_cols, combined):
+    if global_idx >= 512:
+        raw = pet_meta_raw
+        off = (global_idx - 512) * 16
+    elif global_idx in _PTB_OVERRIDE:
+        raw = pet_meta_raw
+        off = global_idx * 16
+    else:
+        raw = gen_meta_raw
+        off = global_idx * 16
+
+    if off + 16 > len(raw):
+        return np.zeros((META_PX, META_PX, 4), dtype=np.uint8)
+    entries = _struct.unpack_from('<8H', raw, off)
+    canvas = np.zeros((META_PX, META_PX, 4), dtype=np.uint8)
+    for layer in range(2):
+        for sub in range(4):
+            entry = entries[layer * 4 + sub]
+            tile_raw = entry & 0x3FF
+            hflip    = bool(entry & 0x400)
+            vflip    = bool(entry & 0x800)
+            pal_slot = (entry >> 12) & 0xF
+            px = (sub % 2) * TILE_PX
+            py = (sub // 2) * TILE_PX
+            is_bottom = (layer == 0)
+            if tile_raw >= 512:
+                tile_rgba = get_tile_rgba(pet_arr, pet_cols, tile_raw - 512,
+                                          hflip, vflip, pal_slot, combined,
+                                          is_bottom=is_bottom)
+            else:
+                tile_rgba = get_tile_rgba(gen_arr, gen_cols, tile_raw,
+                                          hflip, vflip, pal_slot, combined,
+                                          is_bottom=is_bottom)
+            if layer == 0:
+                canvas[py:py + TILE_PX, px:px + TILE_PX] = tile_rgba
+            else:
+                mask = tile_rgba[:, :, 3] > 0
+                for c in range(4):
+                    canvas[py:py + TILE_PX, px:px + TILE_PX, c][mask] = tile_rgba[:, :, c][mask]
+    return canvas
 
 GAME_ROOT = Path(__file__).parent.parent
 GEN_DIR   = GAME_ROOT / 'assets/tilesets/primary_general'
 PET_DIR   = GAME_ROOT / 'assets/tilesets/secondary_petalburg'
+QH_DIR    = GAME_ROOT / 'assets/tilesets/secondary_qihei'
 OUT_PNG   = GAME_ROOT / 'assets/maps/nova_town.png'
 OUT_JSON  = GAME_ROOT / 'assets/maps/nova_town.json'
 
@@ -47,16 +94,13 @@ SIGN    = 45
 MAILBOX = 488
 ROCK_TL = 100; ROCK_TR = 101; ROCK_BL = 116; ROCK_BR = 117
 
-# ── 宝可梦中心（gen primary，5×8）────────────────────────────────
+# ── 宝可梦中心（漆黑魅影风格，3格宽×4行）────────────────────────
+# metatile 来源：从漆黑魅影ROM提取，secondary global index 893-919
 PC = [
-    [8,  9,  10,  9, 11],
-    [16, 17,  18, 17, 18],
-    [24, 25,  26, 25, 26],
-    [40, 41,  42, 41, 43],
-    [56, 57,  58, 57, 59],
-    [72, 73,  74, 73, 75],
-    [80, 81,  82, 81, 83],
-    [88, 89,  90, 89, 91],
+    [893, 894, 895],  # 橙棕圆顶上层
+    [901, 902, 903],  # 圆顶中层+侧面
+    [909, 910, 911],  # 白色墙体
+    [917, 918, 919],  # 蓝色玻璃入口
 ]
 
 # ── 道馆（Mauville 风格，gen 426-461，6格宽 4格高）────────────────
@@ -68,12 +112,12 @@ GYM = [
     [P,   P,   450, 451, P,   P  ],
 ]
 
-# ── 民居（petalburg secondary，5×4）──────────────────────────────
+# ── 民居（petalburg secondary，4×4）──────────────────────────────
 HOUSE_A = [
-    [520, 521, 522, 521, 523],
-    [528, 529, 530, 529, 531],
-    [536, 537, 538, 537, 539],
-    [544, 545, 546, 547, 548],
+    [520, 521, 522, 521],
+    [528, 529, 530, 529],
+    [536, 537, 538, 537],
+    [544, 545, 546, 547],
 ]
 
 # 花圃（pet 576-591）
@@ -85,7 +129,7 @@ HOUSE_METAS    = {520, 521, 522, 523, 528, 529, 530, 531,
 LAB_TOP_METAS  = {524, 525, 526, 578, 579}
 LAB_BODY_METAS = {527, 532, 533, 534, 535, 540, 541, 542, 543,
                   548, 549, 550, 551, 552, 553, 556, 557, 558, 559}
-PC_METAS       = set(range(8, 92))
+PC_METAS       = set(range(893, 920))  # 漆黑魅影 PC metatile（secondary global）
 GYM_METAS      = set(range(426, 462))
 
 SOLID_METAS = (
@@ -148,10 +192,10 @@ def make_grid():
     # ── 横向主路：row 13-14，col 2-27 ────────────────────────────
     hline(13, 2, 27); hline(14, 2, 27)
 
-    # ── 宝可梦中心（col 22, row 3），5×8 ─────────────────────────
-    place(3, 22, PC)
+    # ── 宝可梦中心（col 22, row 2），3×4 ────────────────────────
+    place(2, 22, PC)
     # PC 门前横路连接主路
-    hline(11, 22, 26); hline(12, 22, 26)
+    hline(6, 22, 24); hline(7, 22, 24)
 
     # ── 道馆（col 3, row 8），6×4 ─────────────────────────────────
     place(8, 3, GYM)
@@ -226,19 +270,40 @@ def main():
     gen_meta_raw = dl(f'{BASE_URL}/data/tilesets/primary/general/metatiles.bin')
     pet_meta_raw = dl(f'{BASE_URL}/data/tilesets/secondary/petalburg/metatiles.bin')
 
+    # 漆黑魅影 secondary metatiles（宝可梦中心用）
+    qh_meta_path = QH_DIR / 'metatiles.bin'
+    if qh_meta_path.exists():
+        qh_meta_raw = qh_meta_path.read_bytes()
+        print(f'使用漆黑魅影 metatiles: {qh_meta_path}')
+    else:
+        print('警告: 找不到漆黑魅影 secondary metatiles，PC将显示错误')
+        qh_meta_raw = pet_meta_raw  # 降级
+
     print('加载图块图像和调色板...')
     gen_pals = load_pals(GEN_DIR)
     pet_pals = load_pals(PET_DIR)
+    qh_pals  = load_pals(QH_DIR) if QH_DIR.exists() else pet_pals
 
     gen_img = Image.open(GEN_DIR / 'tiles.png')
     pet_img = Image.open(PET_DIR / 'tiles.png')
     gen_arr = np.array(gen_img); gen_cols = gen_img.width // TILE_PX
     pet_arr = np.array(pet_img); pet_cols = pet_img.width // TILE_PX
 
+    qh_img_path = QH_DIR / 'tiles.png'
+    if qh_img_path.exists():
+        qh_img = Image.open(qh_img_path)
+        qh_arr = np.array(qh_img); qh_cols = qh_img.width // TILE_PX
+    else:
+        qh_arr = pet_arr; qh_cols = pet_cols
+
     combined_def      = make_combined(gen_pals, pet_pals)
-    combined_house    = make_combined(gen_pals, pet_pals, {10: 1})
+    # 民居 slot 6-15 全部直接对应 pet 对应编号的 .pal（绝对映射）
+    combined_house    = make_combined(gen_pals, pet_pals,
+                                      {N: N for N in range(6, 16)})
     combined_lab_top  = make_combined(gen_pals, pet_pals, {8: 9, 14: 9})
     combined_lab_body = make_combined(gen_pals, pet_pals, {8: 3, 14: 3})
+    # 漆黑魅影宝可梦中心调色板
+    combined_pc       = make_combined(gen_pals, qh_pals)
 
     print('设计地图...')
     grid = make_grid()
@@ -252,19 +317,33 @@ def main():
         for col in range(MAP_W):
             meta_idx = grid[row][col] & 0x3FF
 
-            if meta_idx in HOUSE_METAS:
-                combined = combined_house
+            if meta_idx in PC_METAS:
+                # 漆黑魅影宝可梦中心：用 qihei secondary
+                tile = render_metatile(
+                    meta_idx, gen_meta_raw, qh_meta_raw,
+                    gen_arr, gen_cols, qh_arr, qh_cols, combined_pc
+                )
+            elif meta_idx in HOUSE_METAS:
+                tile = render_metatile(
+                    meta_idx, gen_meta_raw, pet_meta_raw,
+                    gen_arr, gen_cols, pet_arr, pet_cols, combined_house
+                )
             elif meta_idx in LAB_TOP_METAS:
-                combined = combined_lab_top
+                tile = render_metatile(
+                    meta_idx, gen_meta_raw, pet_meta_raw,
+                    gen_arr, gen_cols, pet_arr, pet_cols, combined_lab_top
+                )
             elif meta_idx in LAB_BODY_METAS:
-                combined = combined_lab_body
+                tile = render_metatile(
+                    meta_idx, gen_meta_raw, pet_meta_raw,
+                    gen_arr, gen_cols, pet_arr, pet_cols, combined_lab_body
+                )
             else:
-                combined = combined_def
+                tile = render_metatile(
+                    meta_idx, gen_meta_raw, pet_meta_raw,
+                    gen_arr, gen_cols, pet_arr, pet_cols, combined_def
+                )
 
-            tile = render_metatile(
-                meta_idx, gen_meta_raw, pet_meta_raw,
-                gen_arr, gen_cols, pet_arr, pet_cols, combined
-            )
             py = row * META_PX; px = col * META_PX
             rgb   = tile[:, :, :3]
             alpha = tile[:, :, 3:4] / 255.0
@@ -275,6 +354,31 @@ def main():
             is_solid = meta_idx in SOLID_METAS
             coll_row.append(1 if is_solid else 0)
         collision.append(coll_row)
+
+    # 贴精灵球 logo 到 PC 圆顶（GBA OBJ 层模拟）
+    # PC 位于 col=22, row=2；精灵球在第一行（row2）中列（col23）偏移 (4,14)
+    pokeball = [
+        [0, 0, 1, 1, 1, 1, 0, 0],
+        [0, 1, 3, 3, 3, 3, 1, 0],
+        [1, 3, 3, 3, 3, 3, 3, 1],
+        [2, 2, 2, 1, 1, 2, 2, 2],
+        [2, 2, 2, 1, 1, 2, 2, 2],
+        [1, 2, 2, 2, 2, 2, 2, 1],
+        [0, 1, 2, 2, 2, 2, 1, 0],
+        [0, 0, 1, 1, 1, 1, 0, 0],
+    ]
+    col_map = {1: (60, 30, 10), 2: (255, 255, 255), 3: (200, 60, 40)}
+    # PC row=2, col=23（中列），精灵球左上角像素偏移 = col*16+0, row*16+14
+    pb_x = 23 * META_PX + 0
+    pb_y = 2  * META_PX + 14
+    for by, pb_row in enumerate(pokeball):
+        for bx, v in enumerate(pb_row):
+            if v == 0:
+                continue
+            xx, yy = pb_x + bx, pb_y + by
+            if 0 <= xx < canvas.shape[1] and 0 <= yy < canvas.shape[0]:
+                c = col_map[v]
+                canvas[yy, xx] = [c[0], c[1], c[2]]
 
     img = Image.fromarray(canvas, 'RGB')
     img.save(OUT_PNG)

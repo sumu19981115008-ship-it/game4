@@ -1,6 +1,6 @@
 # 当前开发状态
 
-**最后更新**：2026-05-21（Session 12）  
+**最后更新**：2026-05-23（Session 13）  
 **当前阶段**：三张新地图全部完成：StarterVillage / RouteForest / NovaTown 渲染脚本 + PNG + JSON + .gd + .tscn + ZoneTransition 出口全部接入  
 **Godot 版本**：4.6.2.stable
 
@@ -67,6 +67,10 @@
 - [ ] 战斗场景 UI（按 03_战斗系统策划案 布局）
 - [ ] HUD 按 05_UI_UX策划案 重做视觉（深夜蓝配色、卢米奥金边框）
 - [ ] 填充更多宝可梦 .tres 数据
+
+## Session 13 修复（2026-05-23）
+
+- [x] **宝可梦中心外观渲染 bug 修复**：`render_pokemon_center_exterior.py` 精灵球圆顶区域（metatile 65/66/67/96）原本显示 MART 招牌，根因是脚本只用 primary_general 的 metatile 定义。修复方案：检测 secondary_petalburg metatile 是否含有 >= 512 的 tile 索引（即引用了 secondary 自身的 tiles），有则优先用 secondary 定义。同时加载双 tileset（gen + petalburg），tile_raw >= 512 从 petalburg tiles.png 读取（local index = tile_raw - 512）。
 
 ## 已知问题
 
